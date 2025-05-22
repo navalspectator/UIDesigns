@@ -5,6 +5,7 @@ import { PlusIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { PostCard } from "@/components/post-card"
+import { CreatePostModal } from "@/components/create-post-modal"
 
 // Sample data for demonstration
 const samplePosts = [
@@ -188,12 +189,13 @@ const samplePosts = [
 
 export default function PostExplorationPage() {
   const [posts, setPosts] = useState(samplePosts)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   return (
     <main className="container mx-auto py-6 px-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Explore Posts</h1>
-        <Button className="rounded-full" size="icon">
+        <Button className="rounded-full" size="icon" onClick={() => setIsCreateModalOpen(true)}>
           <PlusIcon className="h-5 w-5" />
           <span className="sr-only">Create Post</span>
         </Button>
@@ -204,6 +206,8 @@ export default function PostExplorationPage() {
           <PostCard key={post.id} post={post} />
         ))}
       </div>
+
+      <CreatePostModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </main>
   )
 }
