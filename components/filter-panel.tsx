@@ -22,7 +22,6 @@ import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Badge } from "@/components/ui/badge"
-import { SavedSearchManager } from "@/components/saved-search-manager"
 
 interface FilterPanelProps {
   onFilterChange: (filteredPosts: any[]) => void
@@ -33,7 +32,6 @@ interface FilterPanelProps {
   isPaywalled: boolean | null
   dateFrom: Date | undefined
   dateTo: Date | undefined
-  searchQuery: string
   onCategoryChange: (category: string, checked: boolean) => void
   onSectorChange: (sector: string, checked: boolean) => void
   onTagChange: (tag: string, checked: boolean) => void
@@ -41,14 +39,10 @@ interface FilterPanelProps {
   onDateFromChange: (date: Date | undefined) => void
   onDateToChange: (date: Date | undefined) => void
   onResetFilters: () => void
-  onLoadSavedSearch: (search: any) => void
-  hasUnsavedChanges: boolean
-  onMarkAsSaved: () => void
 }
 
 const categories = ["Events", "Expertise", "Open Positions", "Partner Hunt", "Projects", "Research", "Other"]
 
-// Extended list of sectors for demonstration
 const sectors = [
   "Information Technology",
   "Higher Education",
@@ -72,7 +66,6 @@ const sectors = [
   "Automotive",
 ]
 
-// Extended list of tags for demonstration
 const tags = [
   "AI",
   "Machine Learning",
@@ -113,7 +106,6 @@ export function FilterPanel({
   isPaywalled,
   dateFrom,
   dateTo,
-  searchQuery,
   onCategoryChange,
   onSectorChange,
   onTagChange,
@@ -121,11 +113,7 @@ export function FilterPanel({
   onDateFromChange,
   onDateToChange,
   onResetFilters,
-  onLoadSavedSearch,
-  hasUnsavedChanges,
-  onMarkAsSaved,
 }: FilterPanelProps) {
-  // UI states
   const [categorySearch, setCategorySearch] = useState("")
   const [sectorSearch, setSectorSearch] = useState("")
   const [tagSearch, setTagSearch] = useState("")
@@ -140,10 +128,8 @@ export function FilterPanel({
   const [showAllSectors, setShowAllSectors] = useState(false)
   const [showAllTags, setShowAllTags] = useState(false)
 
-  // Initial display counts
   const initialCount = 5
 
-  // Filter categories, sectors, and tags based on search
   const filteredCategories = categories.filter((category) =>
     category.toLowerCase().includes(categorySearch.toLowerCase()),
   )
@@ -152,44 +138,34 @@ export function FilterPanel({
 
   const filteredTags = tags.filter((tag) => tag.toLowerCase().includes(tagSearch.toLowerCase()))
 
-  // Determine which items to display based on "show all" state
   const displayedCategories = showAllCategories ? filteredCategories : filteredCategories.slice(0, initialCount)
-
   const displayedSectors = showAllSectors ? filteredSectors : filteredSectors.slice(0, initialCount)
-
   const displayedTags = showAllTags ? filteredTags : filteredTags.slice(0, initialCount)
 
-  // Apply filters whenever filter state changes
   useEffect(() => {
     let filtered = [...posts]
 
-    // Filter by categories
     if (selectedCategories.length > 0) {
       filtered = filtered.filter((post) => selectedCategories.includes(post.category))
     }
 
-    // Filter by sectors
     if (selectedSectors.length > 0) {
       filtered = filtered.filter((post) => selectedSectors.includes(post.author.sector))
     }
 
-    // Filter by tags
     if (selectedTags.length > 0) {
       filtered = filtered.filter((post) => post.tags.some((tag) => selectedTags.includes(tag)))
     }
 
-    // Filter by paywall status
     if (isPaywalled !== null) {
       filtered = filtered.filter((post) => post.isPaywalled === isPaywalled)
     }
 
-    // Filter by date range
     if (dateFrom) {
       filtered = filtered.filter((post) => new Date(post.createdAt) >= dateFrom)
     }
 
     if (dateTo) {
-      // Add one day to include the end date fully
       const endDate = new Date(dateTo)
       endDate.setDate(endDate.getDate() + 1)
       filtered = filtered.filter((post) => new Date(post.createdAt) < endDate)
@@ -207,7 +183,6 @@ export function FilterPanel({
 
   return (
     <div className="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto">
-      {/* Filter Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <FilterIcon className="h-4 w-4" />
@@ -226,24 +201,6 @@ export function FilterPanel({
 
       <Separator className="mb-4" />
 
-      {/* Saved Search Manager */}
-      <SavedSearchManager
-        currentSearch={{
-          searchQuery,
-          selectedCategories,
-          selectedSectors,
-          selectedTags,
-          isPaywalled,
-          dateFrom,
-          dateTo,
-        }}
-        onLoadSearch={onLoadSavedSearch}
-        hasUnsavedChanges={hasUnsavedChanges}
-        onMarkAsSaved={onMarkAsSaved}
-      />
-
-      <Separator className="mb-4" />
-
       {/* Selected Filters Section */}
       {(selectedCategories.length > 0 ||
         selectedSectors.length > 0 ||
@@ -255,7 +212,6 @@ export function FilterPanel({
           <div className="mb-4">
             <h3 className="text-sm font-medium mb-3">Selected Filters</h3>
             <div className="flex flex-wrap gap-2">
-              {/* Category filters */}
               {selectedCategories.map((category) => (
                 <Badge
                   key={`category-${category}`}
@@ -278,7 +234,6 @@ export function FilterPanel({
                 </Badge>
               ))}
 
-              {/* Sector filters */}
               {selectedSectors.map((sector) => (
                 <Badge
                   key={`sector-${sector}`}
@@ -301,7 +256,6 @@ export function FilterPanel({
                 </Badge>
               ))}
 
-              {/* Tag filters */}
               {selectedTags.map((tag) => (
                 <Badge
                   key={`tag-${tag}`}
@@ -324,7 +278,6 @@ export function FilterPanel({
                 </Badge>
               ))}
 
-              {/* Paywall filter */}
               {isPaywalled !== null && (
                 <Badge
                   variant="outline"
@@ -346,7 +299,6 @@ export function FilterPanel({
                 </Badge>
               )}
 
-              {/* Date From filter */}
               {dateFrom && (
                 <Badge
                   variant="outline"
@@ -368,7 +320,6 @@ export function FilterPanel({
                 </Badge>
               )}
 
-              {/* Date To filter */}
               {dateTo && (
                 <Badge
                   variant="outline"
@@ -612,7 +563,7 @@ export function FilterPanel({
 
       <Separator className="my-4" />
 
-      {/* Paywall Filter (Boolean) */}
+      {/* Paywall Filter */}
       <div className="mb-4">
         <div className="flex items-center justify-between cursor-pointer mb-2" onClick={() => toggleSection("paywall")}>
           <Label className="text-sm font-medium">Access Type</Label>
