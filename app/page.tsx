@@ -1,207 +1,168 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { PlusIcon, SearchIcon, FilterIcon, XIcon } from "lucide-react"
+import { PlusIcon, SearchIcon, FilterIcon, XIcon, BookOpenIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CreatePostModal } from "@/components/create-post-modal"
-import { FilterPanel } from "@/components/filter-panel"
+import { SimpleFilterPanel } from "@/components/simple-filter-panel"
 import { PostListItem } from "@/components/post-list-item"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-// Sample data for demonstration
-const samplePosts = [
+// Sample library data
+const sampleLibraryPosts = [
   {
-    id: "1",
-    title: "Looking for a technology partner for EU project",
-    category: "Partner Hunt",
+    id: "lib1",
+    title: "Comprehensive Guide to EU Funding Programs 2024",
+    category: "Research",
     author: {
       id: "a1",
-      name: "Jane Smith",
+      name: "Dr. Elena Rodriguez",
       avatar: "/placeholder.svg?height=40&width=40",
-      affiliation: "Tech Solutions Inc.",
-      sector: "Information Technology",
+      affiliation: "European Research Council",
+      sector: "Higher Education",
     },
-    createdAt: new Date(2023, 4, 15),
-    expiresAt: new Date(2023, 6, 15),
+    createdAt: new Date(2024, 0, 15),
+    expiresAt: new Date(2025, 0, 15),
     description:
-      "We are looking for a technology partner with expertise in AI and machine learning for an upcoming EU-funded project. The project aims to develop innovative solutions for smart cities. Ideal partners would have previous experience with EU projects and a strong background in AI research and development. The project is expected to start in September 2023 and run for 36 months.",
-    tags: ["AI", "Machine Learning", "EU Project", "Smart Cities", "Technology"],
+      "A comprehensive guide covering all major EU funding programs including Horizon Europe, Digital Europe Programme, and LIFE Programme. This document provides detailed information on application procedures, eligibility criteria, and success strategies for securing EU funding.",
+    tags: ["EU Funding", "Horizon Europe", "Research", "Grant Writing", "Policy"],
     attachments: [
       {
-        name: "Project_Brief.pdf",
+        name: "EU_Funding_Guide_2024.pdf",
         type: "pdf",
         url: "#",
       },
-      {
-        name: "Technical_Requirements.docx",
-        type: "docx",
-        url: "#",
-      },
     ],
-    likes: 24,
+    likes: 156,
     isPaywalled: false,
     comments: [
       {
         id: "c1",
         author: {
           id: "u2",
-          name: "John Doe",
+          name: "Prof. Michael Chen",
           avatar: "/placeholder.svg?height=40&width=40",
         },
-        content:
-          "This sounds like an interesting project. Our company has experience with similar EU initiatives. Would love to discuss further.",
-        createdAt: new Date(2023, 4, 16),
-        likes: 3,
-        replies: [
-          {
-            id: "r1",
-            author: {
-              id: "a1",
-              name: "Jane Smith",
-              avatar: "/placeholder.svg?height=40&width=40",
-            },
-            content: "Thanks for your interest! Please feel free to contact me directly to discuss the details.",
-            createdAt: new Date(2023, 4, 17),
-            likes: 1,
-          },
-        ],
-      },
-      {
-        id: "c2",
-        author: {
-          id: "u3",
-          name: "Alice Johnson",
-          avatar: "/placeholder.svg?height=40&width=40",
-        },
-        content: "What's the expected budget for this project?",
-        createdAt: new Date(2023, 4, 18),
-        likes: 2,
+        content: "Excellent resource! This guide helped our university secure three major grants this year.",
+        createdAt: new Date(2024, 0, 20),
+        likes: 12,
       },
     ],
   },
   {
-    id: "2",
-    title: "Seeking academic partners for Horizon Europe proposal",
-    category: "Research",
+    id: "lib2",
+    title: "AI Ethics Framework for European Organizations",
+    category: "Expertise",
     author: {
       id: "a2",
-      name: "Robert Chen",
+      name: "Dr. Sarah Thompson",
       avatar: "/placeholder.svg?height=40&width=40",
-      affiliation: "University of Innovation",
-      sector: "Higher Education",
+      affiliation: "AI Ethics Institute",
+      sector: "Non-profit",
     },
-    createdAt: new Date(2023, 4, 10),
-    expiresAt: new Date(2023, 5, 25),
+    createdAt: new Date(2024, 1, 10),
+    expiresAt: new Date(2025, 1, 10),
     description:
-      "Our research group is preparing a Horizon Europe proposal in the field of renewable energy and is looking for academic partners with expertise in solar panel efficiency and energy storage solutions. We already have industrial partners but need academic institutions to strengthen our consortium.",
-    tags: ["Horizon Europe", "Renewable Energy", "Academic", "Research", "Solar Energy"],
-    likes: 18,
+      "A practical framework for implementing AI ethics in European organizations, covering GDPR compliance, algorithmic transparency, and responsible AI development practices. Includes case studies and implementation templates.",
+    tags: ["AI Ethics", "GDPR", "Compliance", "Framework", "Best Practices"],
+    likes: 89,
     isPaywalled: true,
+    comments: [],
+  },
+  {
+    id: "lib3",
+    title: "Sustainable Technology Innovation Handbook",
+    category: "Projects",
+    author: {
+      id: "a3",
+      name: "Dr. Lars Andersen",
+      avatar: "/placeholder.svg?height=40&width=40",
+      affiliation: "Green Tech Alliance",
+      sector: "Energy",
+    },
+    createdAt: new Date(2024, 2, 5),
+    expiresAt: new Date(2025, 2, 5),
+    description:
+      "Comprehensive handbook covering sustainable technology innovations, renewable energy solutions, and green technology implementation strategies. Features real-world case studies from successful European green tech projects.",
+    tags: ["Sustainability", "Green Technology", "Renewable Energy", "Innovation", "Climate"],
+    likes: 134,
+    isPaywalled: false,
+    comments: [
+      {
+        id: "c2",
+        author: {
+          id: "u3",
+          name: "Maria Gonzalez",
+          avatar: "/placeholder.svg?height=40&width=40",
+        },
+        content: "This handbook is a goldmine of information for anyone working in sustainable technology.",
+        createdAt: new Date(2024, 2, 8),
+        likes: 8,
+      },
+    ],
+  },
+  {
+    id: "lib4",
+    title: "Digital Transformation Best Practices for SMEs",
+    category: "Expertise",
+    author: {
+      id: "a4",
+      name: "Thomas Weber",
+      avatar: "/placeholder.svg?height=40&width=40",
+      affiliation: "Digital Innovation Hub",
+      sector: "Digital Services",
+    },
+    createdAt: new Date(2024, 3, 12),
+    expiresAt: new Date(2025, 3, 12),
+    description:
+      "A practical guide for small and medium enterprises looking to undergo digital transformation. Covers technology adoption strategies, change management, and digital skills development.",
+    tags: ["Digital Transformation", "SME", "Technology Adoption", "Change Management", "Skills"],
+    likes: 67,
+    isPaywalled: true,
+    comments: [],
+  },
+  {
+    id: "lib5",
+    title: "Cybersecurity Framework for Critical Infrastructure",
+    category: "Research",
+    author: {
+      id: "a5",
+      name: "Dr. Anna Kowalski",
+      avatar: "/placeholder.svg?height=40&width=40",
+      affiliation: "Cybersecurity Research Institute",
+      sector: "Information Technology",
+    },
+    createdAt: new Date(2024, 4, 8),
+    expiresAt: new Date(2025, 4, 8),
+    description:
+      "Comprehensive cybersecurity framework designed specifically for protecting critical infrastructure in Europe. Includes threat assessment methodologies, incident response procedures, and compliance guidelines.",
+    tags: ["Cybersecurity", "Critical Infrastructure", "Threat Assessment", "Compliance", "Security"],
+    likes: 98,
+    isPaywalled: false,
     comments: [
       {
         id: "c3",
         author: {
           id: "u4",
-          name: "Maria Garcia",
+          name: "Robert Johnson",
           avatar: "/placeholder.svg?height=40&width=40",
         },
-        content:
-          "Our department at Barcelona Tech has been working on advanced energy storage solutions for the past 5 years. Would be interested in joining your consortium.",
-        createdAt: new Date(2023, 4, 12),
-        likes: 4,
+        content: "Essential reading for anyone involved in infrastructure security. Very comprehensive approach.",
+        createdAt: new Date(2024, 4, 15),
+        likes: 5,
       },
     ],
   },
-  {
-    id: "3",
-    title: "SME partner needed for Digital Europe Programme",
-    category: "Open Positions",
-    author: {
-      id: "a3",
-      name: "Thomas Weber",
-      avatar: "/placeholder.svg?height=40&width=40",
-      affiliation: "Digital Solutions GmbH",
-      sector: "Digital Services",
-    },
-    createdAt: new Date(2023, 4, 5),
-    expiresAt: new Date(new Date().getTime() + 8 * 24 * 60 * 60 * 1000), // 8 days from now
-    description:
-      "We are looking for SME partners for a Digital Europe Programme proposal focused on cybersecurity solutions for critical infrastructure. Ideal partners would have experience in network security, threat detection, or related fields.",
-    tags: ["Digital Europe", "Cybersecurity", "SME", "Critical Infrastructure", "Network Security"],
-    likes: 15,
-    isPaywalled: false,
-    comments: [],
-  },
-  {
-    id: "4",
-    title: "Workshop on AI Ethics and Governance",
-    category: "Events",
-    author: {
-      id: "a4",
-      name: "Elena Petrova",
-      avatar: "/placeholder.svg?height=40&width=40",
-      affiliation: "European AI Alliance",
-      sector: "Non-profit",
-    },
-    createdAt: new Date(2023, 4, 20),
-    expiresAt: new Date(2023, 7, 15),
-    description:
-      "We are organizing a two-day workshop on AI Ethics and Governance in Brussels. The workshop will bring together policymakers, researchers, and industry representatives to discuss the ethical implications of AI and develop governance frameworks. Registration is now open.",
-    tags: ["AI Ethics", "Workshop", "Governance", "Policy", "Brussels"],
-    likes: 32,
-    isPaywalled: true,
-    comments: [],
-  },
-  {
-    id: "5",
-    title: "Offering expertise in sustainable agriculture technologies",
-    category: "Expertise",
-    author: {
-      id: "a5",
-      name: "Marco Rossi",
-      avatar: "/placeholder.svg?height=40&width=40",
-      affiliation: "AgriTech Solutions",
-      sector: "Agriculture",
-    },
-    createdAt: new Date(2023, 4, 18),
-    expiresAt: new Date(2023, 8, 18),
-    description:
-      "Our team offers expertise in sustainable agriculture technologies, including precision farming, IoT sensors for crop monitoring, and AI-based yield prediction. We are looking to join consortia for Horizon Europe projects in the food security and sustainable agriculture domains.",
-    tags: ["Agriculture", "Sustainability", "IoT", "Precision Farming", "Food Security"],
-    likes: 27,
-    isPaywalled: false,
-    comments: [],
-  },
-  {
-    id: "6",
-    title: "Collaborative project on urban mobility solutions",
-    category: "Projects",
-    author: {
-      id: "a6",
-      name: "Sophie Dubois",
-      avatar: "/placeholder.svg?height=40&width=40",
-      affiliation: "Urban Mobility Lab",
-      sector: "Transportation",
-    },
-    createdAt: new Date(2023, 4, 25),
-    expiresAt: new Date(2023, 7, 25),
-    description:
-      "We are initiating a collaborative project on innovative urban mobility solutions focusing on reducing carbon emissions and improving public transportation efficiency. We are looking for partners with expertise in transportation planning, smart city technologies, and sustainable mobility.",
-    tags: ["Urban Mobility", "Smart Cities", "Sustainability", "Transportation", "Carbon Reduction"],
-    likes: 19,
-    isPaywalled: true,
-    comments: [],
-  },
 ]
 
-export default function PostExplorationPage() {
-  const [posts, setPosts] = useState(samplePosts)
+export default function LibraryPage() {
+  const [posts, setPosts] = useState(sampleLibraryPosts)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("newest")
-  const [filteredPosts, setFilteredPosts] = useState(samplePosts)
+  const [filteredPosts, setFilteredPosts] = useState(sampleLibraryPosts)
 
   // Filter states
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
@@ -324,6 +285,10 @@ export default function PostExplorationPage() {
       case "oldest":
         return a.createdAt.getTime() - b.createdAt.getTime()
       case "relevant":
+              return a.createdAt.getTime() - b.createdAt.getTime()
+      case "A-Z":
+              return a.createdAt.getTime() - b.createdAt.getTime()
+      case "Z-A":
         return b.likes - a.likes
       default:
         return 0
@@ -333,7 +298,7 @@ export default function PostExplorationPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Filter Panel */}
-      <FilterPanel
+      <SimpleFilterPanel
         onFilterChange={setFilteredPosts}
         posts={posts}
         selectedCategories={selectedCategories}
@@ -356,10 +321,13 @@ export default function PostExplorationPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">Joint Marketplace</h1>
+            <div className="flex items-center gap-2">
+              <BookOpenIcon className="h-6 w-6 text-primary" />
+              <h1 className="text-2xl font-bold">EuroHub4Sino Digital Library</h1>
+            </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <FilterIcon className="h-4 w-4" />
-              <span>"{filteredPosts.length}" posts found...</span>
+              <span>"{filteredPosts.length}" resources found...</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -371,11 +339,13 @@ export default function PostExplorationPage() {
                 <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="oldest">Oldest</SelectItem>
                 <SelectItem value="relevant">Relevant</SelectItem>
+                <SelectItem value="relevant">Z-A</SelectItem>
+                <SelectItem value="relevant">A - Z</SelectItem>
               </SelectContent>
             </Select>
             <Button className="rounded-full" size="icon" onClick={() => setIsCreateModalOpen(true)}>
               <PlusIcon className="h-5 w-5" />
-              <span className="sr-only">Create Post</span>
+              <span className="sr-only">Add Resource</span>
             </Button>
           </div>
         </div>
@@ -385,7 +355,7 @@ export default function PostExplorationPage() {
           <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search posts, authors, tags..."
+            placeholder="Search resources, authors, topics..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             className="pl-9 pr-10 h-12"
@@ -409,7 +379,8 @@ export default function PostExplorationPage() {
             sortedPosts.map((post) => <PostListItem key={post.id} post={post} />)
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No posts found matching your criteria.</p>
+              <BookOpenIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No resources found matching your criteria.</p>
             </div>
           )}
         </div>
