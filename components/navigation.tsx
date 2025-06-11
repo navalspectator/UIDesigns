@@ -3,11 +3,16 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BookOpenIcon, MenuIcon, XIcon } from "lucide-react"
+import { BookOpenIcon, ShoppingCartIcon, MenuIcon, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const navigationItems = [
+  {
+    name: "Joint Marketplace",
+    href: "/",
+    icon: ShoppingCartIcon,
+  },
   {
     name: "Online Dynamic Library",
     href: "/library",
@@ -29,7 +34,7 @@ export function Navigation() {
               <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">JM</span>
               </div>
-              <span className="ml-2 text-xl font-semibold text-gray-900">EuroHub4Sino Library</span>
+              <span className="ml-2 text-xl font-semibold text-gray-900">Joint Platform</span>
             </div>
 
             {/* Desktop Navigation */}
